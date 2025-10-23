@@ -1,0 +1,74 @@
+{
+    "collections": [
+        {
+            "name": "Captain's Hoard",
+            "totalCards": 7,
+            "collectedCards": 0,
+            "cards": [
+                { "name": "Silver Goblet", "collected": 0 },
+                { "name": "The Skull Ring", "collected": 0 },
+                { "name": "The Golden Key", "collected": 0 },
+                { "name": "Gold Coin", "collected": 0 },
+                { "name": "Pouch", "collected": 0 },
+                { "name": "Ruby Ring", "collected": 0 },
+                { "name": "Pearl", "collected": 0 }
+               
+            ],
+            "completed": 0,
+            "reward": "gold200",
+            "rewardAnimation": "gold"
+        },
+		{
+            "name": "Pirate Objects",
+            "totalCards": 7,
+            "collectedCards": 0,
+            "cards": [
+                { "name": "Rum Bottle", "collected": 0 },
+                { "name": "Compass", "collected": 0 },
+                { "name": "Dagger", "collected": 0 },
+                { "name": "Hat", "collected": 0 },
+                { "name": "Amulet", "collected": 0 },
+                { "name": "Mug", "collected": 0 },
+                { "name": "Anchor", "collected": 0 }
+				
+            ],
+            "completed": 0,
+            "reward": "gold200",
+            "rewardAnimation": "gold"
+        },
+        {
+            "name": "Sea Creatures",
+            "totalCards": 6,
+            "collectedCards": 0,
+            "cards": [
+                { "name": "Crab", "collected": 0 },
+                { "name": "Octopus", "collected": 0 },
+                { "name": "Turtle", "collected": 0 },
+                { "name": "Seagull", "collected": 0 },
+                { "name": "Whale", "collected": 0 },
+                { "name": "Parrot", "collected": 0 }
+      
+            ],
+            "completed": 0,
+            "reward": "gold300",
+            "rewardAnimation": "gold"
+        },
+        {
+            "name": "Sea Voyage",
+            "totalCards": 7,
+            "collectedCards": 0,
+            "cards": [
+                { "name": "Storm Clouds", "collected": 0 },
+                { "name": "Rocks", "collected": 0 },
+                { "name": "Treasure Island", "collected": 0 },
+                { "name": "Shipwreck", "collected": 0 },
+                { "name": "Beach", "collected": 0 },
+                { "name": "Stormy Sea", "collected": 0 },
+                { "name": "Treasure Cave", "collected": 0 }
+            ],
+            "completed": 0,
+            "reward": "gold300",
+            "rewardAnimation": "gold"
+        }			
+    ]
+}
