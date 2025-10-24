@@ -4,6 +4,10 @@
 
 import { BG_CONFIG } from "./bg-config.js";
 
+function getInitDataRaw() {
+    try { return (window.Telegram?.WebApp?.initData) || ""; } catch { return ""; }
+}
+
 const log = (...args) => console.log("[BG-Integration]", ...args);
 
 function parseInitDataFromURL() {
@@ -77,15 +81,8 @@ function buildRegisterPayload() {
 // Optional common headers helper
 function buildCommonHeaders() {
     const headers = { "Content-Type": "application/json" };
-    if (BG_CONFIG.ATTACH_HINT_HEADERS) {
-        try {
-            if (navigator?.userAgent) headers["X-Client-User-Agent"] = navigator.userAgent;
-            const lang = (navigator?.language || navigator?.userLanguage);
-            if (lang) headers["X-Client-Lang"] = lang;
-            const sr = `${window?.screen?.width || 0}x${window?.screen?.height || 0}`;
-            headers["X-Client-Screen"] = sr;
-        } catch {}
-    }
+    const initData = getInitDataRaw();
+    if (initData) headers["X-Telegram-Init-Data"] = initData;
     return headers;
 }
 
