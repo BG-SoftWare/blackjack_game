@@ -27,10 +27,10 @@
     const tg = window.Telegram.WebApp;
     tg.ready();
     tg.expand();
-    tg.MainButton.setText("Играть снова");
+    tg.MainButton.setText("Play again");
     tg.MainButton.onClick(() => location.reload());
     tg.MainButton.show();
-</script>
+</script>c
 
 <script>
     if (location.protocol.substr(0, 4) === "file") {
@@ -49,16 +49,6 @@
 <script src="scripts/offlineclient.js" type="module"></script>
 <script src="scripts/bg-config.js" type="module"></script>
 <script src="scripts/bg-integration.js" type="module"></script>
-
-<!--<script>-->
-<!--    // Глобально отключаем туториал-->
-<!--    try {-->
-<!--        localStorage.setItem('tutorial', 0);-->
-<!--        localStorage.setItem('tutorialstep', 999);-->
-<!--    } catch (e) {}-->
-<!--</script>-->
-
-
 <script src="scripts/main.js" type="module"></script>
 <script src="scripts/register-sw.js" type="module"></script>
 

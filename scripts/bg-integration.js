@@ -1,9 +1,35 @@
+
+// BG Soft — Telegram Game Backend Integration
+// Adapted for FastAPI PlayerRegisterSchema (telegram_id, username, first_name, last_name)
+
 import { BG_CONFIG } from "./bg-config.js";
 
 const log = (...args) => console.log("[BG-Integration]", ...args);
+
+function parseInitDataFromURL() {
+    try {
+        const qs = new URLSearchParams(window.location.search);
+        const raw = qs.get("tgWebAppData") || qs.get("tgwebappdata");
+        if (!raw) return null;
+        const decoded = decodeURIComponent(raw);
+        const kv = new URLSearchParams(decoded);
+        const userStr = kv.get("user");
+        let user = null;
+        if (userStr) { try { user = JSON.parse(userStr); } catch {} }
+        return { initData: decoded, user };
+    } catch { return null; }
+}
+
+// Safe access to Telegram WebApp API
 function getTelegramContext() {
     const tg = (typeof window !== "undefined" && window.Telegram && window.Telegram.WebApp) ? window.Telegram.WebApp : null;
-    if (!tg) return null;
+    if (!tg) {
+        const parsed = parseInitDataFromURL();
+        if (parsed && parsed.user) {
+            return { tg: null, initData: parsed.initData, initDataUnsafe: {}, user: parsed.user };
+        }
+        return null;
+    }
     const unsafe = tg.initDataUnsafe || {};
     const user = unsafe.user || null;
     return {
@@ -14,6 +40,7 @@ function getTelegramContext() {
     };
 }
 
+// Small helper for fetch with timeout & retries
 async function fetchWithTimeout(url, options = {}, timeoutMs = BG_CONFIG.TIMEOUT_MS, retries = BG_CONFIG.RETRIES) {
     for (let attempt = 0; attempt <= retries; attempt++) {
         const controller = new AbortController();
@@ -29,15 +56,16 @@ async function fetchWithTimeout(url, options = {}, timeoutMs = BG_CONFIG.TIMEOUT
     }
 }
 
+// Local session state
 const SESSION_KEY = "bg_session_v1";
 function saveSession(s) { try { localStorage.setItem(SESSION_KEY, JSON.stringify(s)); } catch {} }
 function loadSession() { try { return JSON.parse(localStorage.getItem(SESSION_KEY) || "null"); } catch { return null; } }
 function clearSession() { try { localStorage.removeItem(SESSION_KEY); } catch {} }
 
+// === Registration payload strictly per PlayerRegisterSchema ===
 function buildRegisterPayload() {
     const ctx = getTelegramContext();
     const u = ctx?.user || null;
-
     return {
         telegram_id: u?.id ?? 0,
         username: (u?.username ?? null) || null,
@@ -46,6 +74,7 @@ function buildRegisterPayload() {
     };
 }
 
+// Optional common headers helper
 function buildCommonHeaders() {
     const headers = { "Content-Type": "application/json" };
     if (BG_CONFIG.ATTACH_HINT_HEADERS) {
@@ -60,6 +89,7 @@ function buildCommonHeaders() {
     return headers;
 }
 
+// API calls
 async function registerPlayer() {
     const url = BG_CONFIG.BASE_URL + BG_CONFIG.ENDPOINTS.REGISTER_PLAYER;
     const payload = buildRegisterPayload();
@@ -75,7 +105,7 @@ async function registerPlayer() {
     }
     const data = await res.json().catch(() => ({}));
     log("Register OK", data);
-    return data;
+    return data; // PlayerResponseSchema
 }
 
 async function startSession() {
@@ -116,7 +146,6 @@ async function endSession(reason = "page_hidden") {
         headers: buildCommonHeaders(),
         body: JSON.stringify(payload)
     }).catch((e) => {
-        // Swallow network error on unload
         console.warn("[BG-Integration] endSession network error:", e.message);
         return null;
     });
@@ -128,6 +157,7 @@ async function endSession(reason = "page_hidden") {
     }
 }
 
+// Wire up lifecycle
 let _started = false;
 
 async function initIntegration() {
@@ -152,15 +182,14 @@ async function initIntegration() {
         );
 
         document.addEventListener("visibilitychange", () => {
-            if (document.visibilityState === "hidden") {
-                endSession("visibility_hidden");
-            }
+            if (document.visibilityState === "hidden") endSession("visibility_hidden");
         });
         window.addEventListener("beforeunload", () => endSession("beforeunload"));
 
+        // Expose manual API
         window.BGIntegration = { startSession, endSession, registerPlayer, loadSession };
 
-        log("Integration initialized (FastAPI schema)");
+        log("Integration initialized (Telegram fallback ready).");
     } catch (e) {
         console.warn("[BG-Integration] init failed:", e);
     }
