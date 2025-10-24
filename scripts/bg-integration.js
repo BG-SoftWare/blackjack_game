@@ -156,7 +156,7 @@ async function startSession() {
         throw new Error(`Start session failed: ${res.status} ${text}`);
     }
     const data = await res.json().catch(() => ({}));
-    saveSession({ id: data.session_id || data.id || null, started_at: payload.started_at || null });
+    saveSession({ id: data.session_id || data.id || null, started_at: new Date().toISOString() });
     log("Session started", data);
     return data;
 }
