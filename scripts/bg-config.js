@@ -1,5 +1,5 @@
 export const BG_CONFIG = {
-  BASE_URL: "http://192.168.1.152:12006",
+  BASE_URL: "https://tggame.toonlandcfd.cfd",
   ENDPOINTS: {
     REGISTER_PLAYER: "/api/v1/players/register",
     START_SESSION: "/api/v1/games/sessions/start",
