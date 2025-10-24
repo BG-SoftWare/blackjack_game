@@ -8,6 +8,25 @@ function getInitDataRaw() {
     try { return (window.Telegram?.WebApp?.initData) || ""; } catch { return ""; }
 }
 
+function getURLParams() {
+    const p = new URLSearchParams(window.location.search);
+    const val = (k) => {
+        const v = p.get(k);
+        return v === null || v === "" ? null : v;
+    };
+    const uidRaw = val("tg_uid");
+    const uid = uidRaw ? Number(uidRaw) : null;
+    return {
+        uid,
+        username: val("tg_username"),
+        first: val("tg_first"),
+        last: val("tg_last"),
+        lang: val("tg_lang"),
+        premium: val("tg_premium") === "true",
+        sig: val("sig"),
+    };
+}
+
 const log = (...args) => console.log("[BG-Integration]", ...args);
 
 function parseInitDataFromURL() {
@@ -66,23 +85,34 @@ function saveSession(s) { try { localStorage.setItem(SESSION_KEY, JSON.stringify
 function loadSession() { try { return JSON.parse(localStorage.getItem(SESSION_KEY) || "null"); } catch { return null; } }
 function clearSession() { try { localStorage.removeItem(SESSION_KEY); } catch {} }
 
-// === Registration payload strictly per PlayerRegisterSchema ===
 function buildRegisterPayload() {
-    const ctx = getTelegramContext();
-    const u = ctx?.user || null;
+    const q = getURLParams();
+    if (q.uid) {
+        // Быстрый путь — берём из URL
+        return {
+            telegram_id: q.uid,
+            username: q.username,
+            first_name: q.first,
+            last_name: q.last,
+        };
+    }
+
+    // fallback на Telegram.WebApp (если URL-параметров нет)
+    const u = window.Telegram?.WebApp?.initDataUnsafe?.user || null;
     return {
         telegram_id: u?.id ?? 0,
-        username: (u?.username ?? null) || null,
-        first_name: (u?.first_name ?? null) || null,
-        last_name: (u?.last_name ?? null) || null
+        username: u?.username ?? null,
+        first_name: u?.first_name ?? null,
+        last_name: u?.last_name ?? null,
     };
 }
 
 // Optional common headers helper
 function buildCommonHeaders() {
     const headers = { "Content-Type": "application/json" };
-    const initData = getInitDataRaw();
-    if (initData) headers["X-Telegram-Init-Data"] = initData;
+    const q = getURLParams();
+    if (q.sig) headers["X-URL-Signature"] = q.sig;
+    headers["X-URL-Params"] = window.location.search.slice(1).substring(0, 4000);
     return headers;
 }
 
