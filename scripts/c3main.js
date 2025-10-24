@@ -50121,7 +50121,7 @@ void main(void) {
 
 function loadTutorial() {
     const e = parseInt(localStorage.getItem("tutorial"), 10);
-    runtime.globalVars.tutorial = isNaN(e) ?  null : e
+    runtime.globalVars.tutorial = isNaN(e) ?  0 : e
 }
 
 function setTutorial(e) {
