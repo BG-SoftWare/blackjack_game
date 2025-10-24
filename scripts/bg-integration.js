@@ -171,7 +171,7 @@ async function endSession(reason = "page_hidden") {
         session_id: session?.id ?? null,
         ended_at: new Date().toISOString(),
         reason,
-        status:"finished",
+        status: "finished",
         telegram_id: tgctx.telegram_id
     };
 
