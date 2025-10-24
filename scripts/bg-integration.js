@@ -138,9 +138,13 @@ async function registerPlayer() {
 async function startSession() {
     const url = BG_CONFIG.BASE_URL + BG_CONFIG.ENDPOINTS.START_SESSION;
     const ctx = getTelegramContext();
+    const tgctx = buildRegisterPayload();
+
     const payload = {
-        started_at: new Date().toISOString(),
-        telegram_id: ctx?.user?.id ?? null
+        idempotency_key: new Date().toISOString(),
+        telegram_id: tgctx.telegram_id,
+        start_params: {},
+        game_code: "sgdfjksdfgljksdg"
     };
     const res = await fetchWithTimeout(url, {
         method: "POST",
