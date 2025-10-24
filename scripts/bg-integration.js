@@ -82,7 +82,7 @@ async function fetchWithTimeout(url, options = {}, timeoutMs = BG_CONFIG.TIMEOUT
 // Local session state
 const SESSION_KEY = "bg_session_v1";
 function saveSession(s) { try { localStorage.setItem(SESSION_KEY, JSON.stringify(s)); } catch {} }
-function loadSession() { try { return JSON.parse(localStorage.getItem(SESSION_KEY) || "null"); } catch { return null; } }
+function loadSession() { try { return JSON.parse(localStorage.getItem(SESSION_KEY) || "null"); } catch (e) { console.error(e);return null; } }
 function clearSession() { try { localStorage.removeItem(SESSION_KEY); } catch {} }
 
 function buildRegisterPayload() {
@@ -165,11 +165,13 @@ async function endSession(reason = "page_hidden") {
     const session = loadSession();
     const ctx = getTelegramContext();
     const url = BG_CONFIG.BASE_URL + BG_CONFIG.ENDPOINTS.END_SESSION;
+    const tgctx = buildRegisterPayload();
+
     const payload = {
         session_id: session?.id ?? null,
         ended_at: new Date().toISOString(),
         reason,
-        telegram_id: ctx?.user?.id ?? null
+        telegram_id: tgctx.telegram_id
     };
 
     const res = await fetchWithTimeout(url, {
